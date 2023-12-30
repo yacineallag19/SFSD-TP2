@@ -16,7 +16,7 @@ void ouvrir(FILE **f, char *nomfichier, char *mode)
 {
     if (strcmp(mode, "A") == 0) 
 	{
-        *f = fopen(nomfichier, "ab+");
+        *f = fopen(nomfichier, "rb+");
     } else if (strcmp(mode, "N") == 0) 
 	{
         *f = fopen(nomfichier, "wb+");
@@ -447,7 +447,6 @@ void generateRegion (BUFFER *buf,int position)
 } 
 
 
-
 void chargement_init(char* nomfichier,int n)
 {
 	BUFFER *buf ; 
@@ -526,8 +525,10 @@ void insertion(char* nomfichier,Tenreg e)
 		n++  ;
 		buf->nb=1;
 		buf->tab[0]=e;
-		affentete(f,n,1);
+		affentete(f,1,n);
 	}
+
+	ecrireDir(f,n,buf) ; 
 	insertionIndex(tabIndex,e.matricule,n,buf->nb-1) ;
 	sauvIndex("MATRICULE_INDEX.idx",tabIndex) ; 
 	fermer(f);
@@ -535,17 +536,21 @@ void insertion(char* nomfichier,Tenreg e)
 } 
 
 
-void suppression(char* nomfichier, int mat, INDEX *tabIndex)
+void suppression(char* nomfichier, int mat)
 {
 	FILE *f ; 
 	BUFFER *buf;
+	INDEX *tabIndex ;
 	buf = (BUFFER*)malloc(sizeof(BUFFER)) ;
-	BUFFER buf2;
+	tabIndex = (INDEX*)malloc(sizeof(INDEX)) ;
+	chargementIndex("MATRICULE_INDEX.idx",tabIndex) ; 
+	BUFFER *buf2;
+	buf2 = (BUFFER*)malloc(sizeof(BUFFER)) ;
 	int i,j,t,n ;
 	bool trouve=true;
 	ouvrir(&f,nomfichier,"A");
 	rechercheIndex(tabIndex,mat,&trouve,&i,&j,&t) ; 
-	buf2.nb=0;
+	buf2->nb=0;
 	trouve=true;
 	if (trouve)
 	{
@@ -553,13 +558,13 @@ void suppression(char* nomfichier, int mat, INDEX *tabIndex)
 		if(i!=n)
 		{
 			lireDir(f,i,buf);
-			lireDir(f,n,&buf2);
-			buf->tab[j]=buf2.tab[buf2.nb-1];
-			buf2.nb=buf2.nb-1;
+			lireDir(f,n,buf2);
+			buf->tab[j]=buf2->tab[buf2->nb-1];
+			buf2->nb=buf2->nb-1;
 			ecrireDir(f,i,buf);
-			if (buf2.nb>0)
+			if (buf2->nb>0)
 			{
-				ecrireDir(f,n,&buf2);
+				ecrireDir(f,n,buf2);
 			}
 			else
 			{
@@ -581,6 +586,7 @@ void suppression(char* nomfichier, int mat, INDEX *tabIndex)
 			}
 		}
     suppressionIndex(tabIndex,mat) ; 
+	sauvIndex("MATRICULE_INDEX.idx",tabIndex) ; 
 	fermer(f);
 	}
 }
@@ -613,15 +619,6 @@ void printFile (char *nomfichier)
         }
     }
 }
-
-
-
-
-
-
-
-
-
 
 
 
