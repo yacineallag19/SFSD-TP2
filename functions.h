@@ -100,12 +100,13 @@ void generateGroupeSanguin (BUFFER *buf,int position) ; // generer un groupe san
 void generateGrade (BUFFER *buf,int position) ; // generer un grade de l'ecrire dans buffer
 void generateForce (BUFFER *buf,int position) ; // generer une force et l'ecrire dans buffer
 void generateRegion (BUFFER* buf,int position) ; // generer une region et l'ecrire dans buffer
+void generateSoldat (BUFFER *buf,int position) ; // generer un soldat et l'ecrire dans le buffer 
 
 // Les fonctions du manipulation du fichier 
 
 void chargement_init(char* nomfichier,int n);
-void insertion(char* nomfichier,Tenreg e,INDEX *tabIndex) ;
-void suppression(char* nomfichier, int mat, INDEX *tabIndex);
+void insertion(char* nomfichier,Tenreg e) ;
+void suppression(char* nomfichier, int mat);
 void printFile (char* nomfichier) ; 
 
 
