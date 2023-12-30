@@ -54,25 +54,27 @@ bool lireDir (FILE *f , int i , BUFFER* buf) // ecrire le bloc numero i dans buf
 
 }
 
-bool ecrireDir (FILE *f , int i , BUFFER* buf) // ecrire buf dans le bloc numero i
+bool ecrireDir(FILE *f, int i, BUFFER *buf)
 {
     if (f == NULL || i <= 0 || fseek(f, (i - 1) * sizeof(BUFFER) + sizeof(Tentete), SEEK_SET) != 0) {
         return false;
     }
 
-    if (fwrite(buf, sizeof(BUFFER), 1, f) != 1) {
-        return false;  // Check if the write was successful
+    if (fwrite(buf, sizeof(BUFFER), 1, f) != 1)
+    {
+        return false; // Check if the write was successful
     }
 
     return true;
 }
 
 
+
 int entete(FILE *f, int i ) // recuperer nombre de bloc
 {
 		Tentete varentete;
 		fseek(f,0,SEEK_SET);
-		fread(&entete,sizeof(Tentete),1,f);
+		fread(&varentete,sizeof(Tentete),1,f);
 	    return varentete.nombreBloc ;
 }
 
@@ -194,7 +196,7 @@ void chargementIndex (char *path, INDEX *tabIndex)
 	buf = (Ibloc*)malloc(sizeof(Ibloc)) ; 
 	j = Ientete(f) ;
 	debut = 0 ;
-	tabIndex->taille = 1 ; 
+	tabIndex->taille = 0 ; 
 	for (int i = 1 ; i <= j ; i++ )
 	{
 		lireIbloc(f,i,buf) ;
@@ -232,7 +234,8 @@ void sauvIndex (char *path , INDEX *tabIndex)
 			break ;
 		}
 		debut = fin + 1 ;
-	}
+	}	
+	fermer(f) ;
     return ;
 
 }
@@ -462,6 +465,14 @@ void chargement_init(char* nomfichier,int n)
 	{
 		for (int k=1;k<=n;k++)
 		{
+			if(j==MAX)
+			{
+				buf->nb=MAX;
+				ecrireDir(f,i,buf);
+				j=0;
+				i=i+1;
+				affentete(f,i,1);
+			}
 			generateMatricule(buf,tabIndex,i,j);
 			generateDateNaissance(buf,j);
 			generateForce(buf,j);
@@ -471,14 +482,6 @@ void chargement_init(char* nomfichier,int n)
 			generatePrenom(buf,j);
 			generateRegion(buf,j);
 			generateWilayaNaissance(buf,j);
-			if(j==MAX)
-			{
-				buf->nb=j;
-				ecrireDir(f,i,buf);
-				j=0;
-				i=i+1;
-				affentete(f,i,1);
-			}
 			j++;
 
 		}
@@ -492,13 +495,17 @@ void chargement_init(char* nomfichier,int n)
 }
 
 
-void insertion(char* nomfichier,Tenreg e,INDEX *tabIndex) 
+void insertion(char* nomfichier,Tenreg e) 
 {
     FILE *f ; 
+	INDEX *tabIndex ;
 	ouvrir(&f,nomfichier,"A");
 	int i ;
 	BUFFER *buf;
+	buf = (BUFFER*)malloc(sizeof(BUFFER)) ;
 	int n=entete(f,1);
+	tabIndex = (INDEX*)malloc(sizeof(INDEX)) ;
+	chargementIndex("MATRICULE_INDEX.idx",tabIndex) ; 
 	if (n!=0)
 	{
 		lireDir(f,n,buf);
@@ -511,21 +518,21 @@ void insertion(char* nomfichier,Tenreg e,INDEX *tabIndex)
 	}
 	if (buf->nb<MAX)
 	{
-		buf->tab[buf->nb]=(e);
+		buf->tab[buf->nb]=e;
 		buf->nb=buf->nb+1;
-		ecrireDir(f,n,buf);
 	}
 	else
 	{
+		n++  ;
 		buf->nb=1;
 		buf->tab[0]=e;
-		ecrireDir(f,n+1,buf);
-		affentete(f,n+1,1);
+		affentete(f,n,1);
 	}
 	insertionIndex(tabIndex,e.matricule,n,buf->nb-1) ;
+	sauvIndex("MATRICULE_INDEX.idx",tabIndex) ; 
 	fermer(f);
 
-}
+} 
 
 
 void suppression(char* nomfichier, int mat, INDEX *tabIndex)
@@ -579,35 +586,41 @@ void suppression(char* nomfichier, int mat, INDEX *tabIndex)
 }
 
 
-/*void printFile (char *nomfichier)
+void printFile (char *nomfichier)
 {
-	FILE *f ; 
-	BUFFER *buf ; 
-	buf = (BUFFER*)malloc(sizeof(BUFFER)) ;
-	int n,i,k,j ; 
-	ouvrir(&f,nomfichier,"A") ; 
-	n = entete(f,1) ; 
-	i = 1 ; 
-	for (i;i<=12;i++)
-	{
-		j = 0 ;
-		lireDir(f,i,buf) ;
-		k =  buf->nb ; 
-		for (j;j<=100;j++)
-		{
-			printf("Matricule: %d \n",buf->tab[j].matricule) ;
-			printf("Nom: %s\n",buf->tab[j].nom) ;
-			printf("Prenom: %s\n",buf->tab[j].prenom) ;
-			printf("Date de naissance: %d\n",buf->tab[j].dateNaissance) ;
-			printf("Wilaya: %s\n",buf->tab[j].wilayaNaissance) ;
-			printf("group: %s\n",buf->tab[j].groupeSanguin) ;
-			printf("grade: %s\n",buf->tab[j].grade) ;
-			printf("Force Armee: %s\n",buf->tab[j].forceArmee) ;
-			printf("region: %s\n",buf->tab[j].regionMilitaire) ;
-		}
-	}
-	fermer(f) ; 
-} */
+    BUFFER *buf ;
+    buf = (BUFFER*)malloc(sizeof(BUFFER)) ; 
+    FILE *f ;
+    ouvrir(&f,nomfichier,"A") ;
+    int t , j;
+    for (int i=1;i<=entete(f,1);i++)
+    {
+        lireDir(f,i,buf) ; 
+        t = buf->nb ;
+        j = 0 ;
+        for (j; j<t ; j++)
+        {
+            printf("Matricule: %d\t  |  ", buf->tab[j].matricule) ;
+            printf("Nom : %s\t  |  ",buf->tab[j].nom) ;
+            printf("Prenom : %s\t \n",buf->tab[j].prenom) ;
+            printf("Date de Naissance : %d/%d/%d\t |",(buf->tab[j].dateNaissance/1000000),((buf->tab[j].dateNaissance/10000)%100),(buf->tab[j].dateNaissance)%10000) ;
+            printf("Groupe : %s\t \n",buf->tab[j].groupeSanguin) ;
+            printf("force : %s\t \n",buf->tab[j].forceArmee) ;
+            printf("grade : %s\t \n",buf->tab[j].grade) ;
+            printf("wilaya : %s\t |  ",buf->tab[j].wilayaNaissance) ;
+            printf("Region Militaire: %s\n",buf->tab[j].regionMilitaire) ; 
+            printf("------------------------------------- \n") ;
+        }
+    }
+}
+
+
+
+
+
+
+
+
 
 
 
