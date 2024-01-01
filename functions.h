@@ -107,7 +107,10 @@ void generateSoldat (BUFFER *buf,int position) ; // generer un soldat et l'ecrir
 void chargement_init(char* nomfichier,int n);
 void insertion(char* nomfichier,Tenreg e) ;
 void suppression(char* nomfichier, int mat);
+void requeteIntervalle (char* nomfichier, int m1, int m2) ; 
+void printSoldier(Tenreg e) ; 
 void printFile (char* nomfichier) ; 
+void modifierRegion(char* nomfichier, int valeur) ;
 
 
 #endif
