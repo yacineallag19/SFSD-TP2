@@ -11,6 +11,7 @@ void isplayDeleteSoldier();
 void DisplayRequeteIntervale();
 void DisplayRequeteIntervale();
 void DisplayPrintFile();
+void DisplayCreateNewFile();
 void DisplayChangeRegion();
 void display() ;
 
