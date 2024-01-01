@@ -592,6 +592,65 @@ void suppression(char* nomfichier, int mat)
 }
 
 
+void requeteIntervalle (char* nomfichier, int m1, int m2) 
+{
+	FILE *f ;
+    ouvrir(&f,nomfichier,"A") ; 
+    BUFFER *buf ;
+    buf = (BUFFER*)malloc(sizeof(BUFFER)) ; 	
+	int i,j,t1,t2 ;
+	bool trouve1, trouve2 ;
+	INDEX *tabIndex ;
+	tabIndex = (INDEX*)malloc(sizeof(INDEX)) ;
+	chargementIndex("MATRICULE_INDEX.idx",tabIndex) ;
+	rechercheIndex(tabIndex,m1,&trouve1,&i,&j,&t1) ;
+	rechercheIndex(tabIndex,m2,&trouve2,&i,&j,&t2) ;
+	if (((t1 >= tabIndex->taille)) && (t2 >= tabIndex->taille))
+	{
+		printf("Aucun element est dans ce intervalle") ;
+		return ; 
+	}
+	if ((t1 == t2) && (t1 == 0))
+	{
+		printf("Aucun element est dans ce intervalle") ;
+		return ; 
+	}
+	while ( (t1<= t2)&&(t1<tabIndex->taille))
+	{
+		if (t1 == t2)
+		{
+			if (!trouve2)
+			{
+				break ; 
+			}
+		}
+		rechercheIndex(tabIndex,tabIndex->tableau[t1].cle,&trouve1,&i,&j,&t1) ; 
+		lireDir(f,i,buf) ;
+		printSoldier(buf->tab[j]) ;
+		t1++ ; 
+	}
+    fermer(f); 
+	
+}
+
+
+void printSoldier(Tenreg e )
+{
+	printf("------------------------------------- \n") ;
+	printf("Matricule: %d\t  |  ", e.matricule) ;
+    printf("Nom : %s\t  |  ",e.nom) ;
+    printf("Prenom : %s\t \n",e.prenom) ;
+    printf("Date de Naissance : %d/%d/%d\t |",(e.dateNaissance/1000000),((e.dateNaissance/10000)%100),(e.dateNaissance)%10000) ;
+    printf("Groupe : %s\t \n",e.groupeSanguin) ;
+    printf("force : %s\t \n",e.forceArmee) ;
+    printf("grade : %s\t \n",e.grade) ;
+    printf("wilaya : %s\t |  ",e.wilayaNaissance) ;
+    printf("Region Militaire: %s\n",e.regionMilitaire) ; 
+    printf("------------------------------------- \n") ;
+
+}
+
+
 void printFile (char *nomfichier)
 {
     BUFFER *buf ;
@@ -600,29 +659,39 @@ void printFile (char *nomfichier)
     ouvrir(&f,nomfichier,"A") ;
     int t , j;
     for (int i=1;i<=entete(f,1);i++)
+
     {
         lireDir(f,i,buf) ; 
         t = buf->nb ;
         j = 0 ;
         for (j; j<t ; j++)
         {
-            printf("Matricule: %d\t  |  ", buf->tab[j].matricule) ;
-            printf("Nom : %s\t  |  ",buf->tab[j].nom) ;
-            printf("Prenom : %s\t \n",buf->tab[j].prenom) ;
-            printf("Date de Naissance : %d/%d/%d\t |",(buf->tab[j].dateNaissance/1000000),((buf->tab[j].dateNaissance/10000)%100),(buf->tab[j].dateNaissance)%10000) ;
-            printf("Groupe : %s\t \n",buf->tab[j].groupeSanguin) ;
-            printf("force : %s\t \n",buf->tab[j].forceArmee) ;
-            printf("grade : %s\t \n",buf->tab[j].grade) ;
-            printf("wilaya : %s\t |  ",buf->tab[j].wilayaNaissance) ;
-            printf("Region Militaire: %s\n",buf->tab[j].regionMilitaire) ; 
-            printf("------------------------------------- \n") ;
+			printSoldier(buf->tab[j]) ;
         }
     }
 }
 
+void modifierRegion(char* nomfichier, int valeur)
+{
+	FILE *f ; 
+	BUFFER *buf ;
+	int i,j,t,n ;
+	bool trouve ;
+	buf = (BUFFER *) malloc(sizeof(BUFFER)) ; 
+	recherche(nomfichier,valeur,&trouve,&i,&j,&t) ;
+	if (trouve)
+	{
+		printf("\nEntrez le numero de la nouvelle region: ") ; 
+		scanf("%d",&n);
+		ouvrir(&f,nomfichier,"A") ;
+		lireDir(f,i,buf) ;
+		strcpy(buf->tab[j].regionMilitaire,regions[n-1]) ;
+		ecrireDir(f,i,buf) ;
+		return ;
+	}
+	printf("Soldat n'existe pas dans notre base de donnes") ; 
 
-
-
+}
 
 
 
