@@ -4,15 +4,18 @@
 void DisplaySearchSoldier()
 {
   int matricule,i,j,t ;
-  char *filepath ;
+  char filepath[50] ;
   bool trouve ;
-  printf("\033[1mle chemin du fichier: ");
-  scanf("%s",filepath);
-  printf("\n") ;
-  printf("\033[1mTapez le Matricule: ");
-  scanf("%d",&matricule) ; 
-  printf("\n")
+  
+  printf("\033[1mle chemin du fichier:");
+  scanf(" %99[^\n]", filepath);
+
+  printf("\033[1mTapez le Matricule:");
+  scanf(" %d", &matricule);
+
+  printf("\n");
   printf("\033[1mRECHERCHE EN COURS...");
+  
   recherche(filepath,matricule,&trouve,&i,&j,&t) ;
   if (trouve)
   {
@@ -23,12 +26,66 @@ void DisplaySearchSoldier()
     printf("\033[1mElement n'existe pas");
   }
 
-  return ; 
+  return ;
+
     
 }
 void DisplayAddSoldier()
 {
-  //
+  int jour,mois,annee ;
+  char filepath[50] ;
+  Tenreg e ;
+  
+  
+  printf("\033[1mEntrez le chemin du fichier:");
+  scanf(" %99[^\n]", filepath);
+  printf("\n");
+  
+  printf("\033[1mEntrez le matricule a inserer:");
+  scanf(" %d", &(e.matricule));
+  printf("\n");
+  
+  printf("\033[1mEntrez le jour de naissance:");
+  scanf(" %d", &jour);
+  printf("\n");
+  
+  printf("\033[1mEntrez le mois de naissance:");
+  scanf(" %d", &mois);
+  printf("\n");
+  
+  printf("\033[1mEntrez l'annee de naissance:");
+  scanf(" %d", &annee);
+  printf("\n"); 
+  e.dataNaissance = annee + mois*10000 + jour*1000000 ;
+
+  printf("\033[1mEntrez le nom:");
+  scanf(" %s", e.nom);
+  printf("\n");
+
+  printf("\033[1mEntrez le prenom:");
+  scanf(" %s", e.prenom);
+  printf("\n");
+  
+  printf("\033[1mEntrez la wilaya de naissance:");
+  scanf(" %s", e.wilayaNaissance);
+  printf("\n");
+  
+  printf("\033[1mEntrez le groupe sanguin:");
+  scanf(" %s", e.groupeSanguin);
+  printf("\n");
+  
+  printf("\033[1mEntrez le grade:");
+  scanf(" %s", e.grade);
+  printf("\n");
+  
+  printf("\033[1mEntrez la force armee:");
+  scanf(" %c", e.forceArmee);
+  printf("\n");
+  
+  printf("\033[1mEntez la region:");
+  scanf(" %c", e.regionMilitaire);
+  printf("\n");
+  
 }
 void isplayDeleteSoldier()
 {
