@@ -1,5 +1,5 @@
 #include "interface.h"
 int main (){
-    display
+    display () ; 
     return 0;
 }
