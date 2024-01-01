@@ -494,6 +494,16 @@ void chargement_init(char* nomfichier,int n)
 }
 
 
+
+void recherche(char* nomfichier, int valeur,bool *trouve,int *i,int *j,int *t)   
+{
+	INDEX *tabIndex ;
+	tabIndex = (INDEX*)malloc(sizeof(INDEX)) ;
+	chargementIndex("MATRICULE_INDEX.idx",tabIndex) ;
+	rechercheIndex(tabIndex,valeur,trouve,i,j,t) ;
+}
+
+
 void insertion(char* nomfichier,Tenreg e) 
 {
     FILE *f ; 
