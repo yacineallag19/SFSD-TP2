@@ -3,7 +3,28 @@
 
 void DisplaySearchSoldier()
 {
-  //
+  int matricule,i,j,t ;
+  char *filepath ;
+  bool trouve ;
+  printf("\033[1mle chemin du fichier: ");
+  scanf("%s",filepath);
+  printf("\n") ;
+  printf("\033[1mTapez le Matricule: ");
+  scanf("%d",&matricule) ; 
+  printf("\n")
+  printf("\033[1mRECHERCHE EN COURS...");
+  recherche(filepath,matricule,&trouve,&i,&j,&t) ;
+  if (trouve)
+  {
+    printf("\033[1mElement Trouve sur le bloc %d, position %d",i,j);
+  }
+  else 
+  {
+    printf("\033[1mElement n'existe pas");
+  }
+
+  return ; 
+    
 }
 void DisplayAddSoldier()
 {
