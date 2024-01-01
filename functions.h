@@ -105,6 +105,7 @@ void generateSoldat (BUFFER *buf,int position) ; // generer un soldat et l'ecrir
 // Les fonctions du manipulation du fichier 
 
 void chargement_init(char* nomfichier,int n);
+void recherche(char* nomfichier, int valeur,bool *trouve,int *i,int *j,int *t)   ;
 void insertion(char* nomfichier,Tenreg e) ;
 void suppression(char* nomfichier, int mat);
 void requeteIntervalle (char* nomfichier, int m1, int m2) ; 
