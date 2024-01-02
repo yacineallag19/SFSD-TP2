@@ -78,6 +78,7 @@ int allocBloc (FILE *f) ; // Retourne le numéro d’un nouveau bloc alloué à 
 
 // fonction pour la manipulation de l'index
 int Ientete(FILE *f) ;
+void createIndex(char *nom) ;
 void affIentete(FILE *f, int valeur)  ;
 bool lireIbloc (FILE *f , int i , Ibloc* buf) ; // lire un bloc d'index
 bool ecrireIbloc (FILE *f , int i , Ibloc * buf ) ; // ecrire un bloc d'index
@@ -112,6 +113,8 @@ void requeteIntervalle (char* nomfichier, int m1, int m2) ;
 void printSoldier(Tenreg e) ; 
 void printFile (char* nomfichier) ; 
 void modifierRegion(char* nomfichier, int valeur) ;
+
+bool is_valid_date(int day, int month, int year) ;
 
 
 #endif
