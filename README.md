@@ -1,6 +1,8 @@
 Project Overview
 
 Welcome to the university project developed at "Ecole supérieure d'informatique Alger - ESI," supervised by Dr. Kermi. The primary objective of this project is to manipulate a simple database, with the example used being a military database. Feel free to customize the database properties and structures to suit your needs.
+
+
 Project Focus
 
 The project primarily emphasizes database manipulation and optimization, prioritizing logic over user interface design. While the current focus leans towards the underlying logic, we are actively working on enhancing the user interface, which will be shared soon.
