@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void initEntete(FILE* f) 
+void initEntete(FILE* f)
 {
 	Tentete entete;
 	entete.nombreBloc=0;
@@ -12,23 +12,22 @@ void initEntete(FILE* f)
 	return ;
 }
 
-void ouvrir(FILE **f, char *nomfichier, char *mode) 
-{
-    if (strcmp(mode, "A") == 0) 
-	{
+void ouvrir(FILE **f, char *nomfichier, char *mode) {
+    if (mode[0] == 'A' && mode[1] == '\0') {
+        // "A" mode for an existing file
         *f = fopen(nomfichier, "rb+");
-    } else if (strcmp(mode, "N") == 0) 
-	{
+    } else if (mode[0] == 'N' && mode[1] == '\0') {
+        // "N" mode for a new file (create or overwrite)
         *f = fopen(nomfichier, "wb+");
-        initEntete(*f);
-    } else 
-	{
+    } else {
+        // Invalid mode
         fprintf(stderr, "Invalid mode: %s\n", mode);
         exit(EXIT_FAILURE);
     }
-    if (*f == NULL) 
-	{
-        perror("Error opening the file");
+
+    if (*f == NULL) {
+        // Error opening file
+        perror("Error opening file");
         exit(EXIT_FAILURE);
     }
 }
@@ -94,7 +93,16 @@ void affentete(FILE *f, int valeur , int i) // modifier le nombre de bloc par va
 int allocBloc(FILE *f) // Retourne le numéro d’un nouveau bloc alloué à F
 {
 	affentete(f,entete(f,1)+1,1);
-	return entete(f,1);	
+	return entete(f,1);
+}
+
+
+void createIndex(char *nom)
+{
+	FILE *f ;
+	ouvrir(&f,nom,"N") ;
+	affIentete(f,1) ;
+	return ;
 }
 
 
@@ -193,10 +201,10 @@ void chargementIndex (char *path, INDEX *tabIndex)
 	FILE *f ;
 	ouvrir(&f,path,"A") ;
 	Ibloc *buf ;
-	buf = (Ibloc*)malloc(sizeof(Ibloc)) ; 
+	buf = (Ibloc*)malloc(sizeof(Ibloc)) ;
 	j = Ientete(f) ;
 	debut = 0 ;
-	tabIndex->taille = 0 ; 
+	tabIndex->taille = 0 ;
 	for (int i = 1 ; i <= j ; i++ )
 	{
 		lireIbloc(f,i,buf) ;
@@ -213,7 +221,7 @@ void sauvIndex (char *path , INDEX *tabIndex)
 	FILE *f ;
 	ouvrir(&f,path,"A") ;
 	Ibloc *buf ;
-	buf = (Ibloc*)malloc(sizeof(Ibloc)) ; 
+	buf = (Ibloc*)malloc(sizeof(Ibloc)) ;
 	j = tabIndex->taille ;
 	if (j%1024 == 0)
 	{
@@ -234,7 +242,7 @@ void sauvIndex (char *path , INDEX *tabIndex)
 			break ;
 		}
 		debut = fin + 1 ;
-	}	
+	}
 	fermer(f) ;
     return ;
 
@@ -250,22 +258,22 @@ void rechercheIndex (INDEX *tabIndex , int valeur, bool *trouve , int *numBloc ,
 	while (inf <= sup)
 	{
 		k = (sup + inf ) / 2 ;
-		temp = tabIndex->tableau[k].cle ; 
+		temp = tabIndex->tableau[k].cle ;
 		if (temp == valeur)
 		{
 			*trouve = true;
 			*numBloc = tabIndex->tableau[k].numeroBloc ;
 	        *posBloc = tabIndex->tableau[k].deplacement ;
 	        *place = k ;
-			return ; 
+			return ;
 		}
-		else 
+		else
 		{
 			if (temp > valeur)
 			{
 				sup = k - 1;
 			}
-			else 
+			else
 			{
 				inf = k + 1 ;
 			}
@@ -277,7 +285,7 @@ void rechercheIndex (INDEX *tabIndex , int valeur, bool *trouve , int *numBloc ,
 	{
 		*place = inf ;
 	}
-	else 
+	else
 	{
 		*place = k ;
 	}
@@ -313,7 +321,7 @@ void suppressionIndex (INDEX *tabIndex , int valeur)
 	{
 		int i = position ;
 		int k = tabIndex->taille ;
-		while (i < k-1) 
+		while (i < k-1)
 		{
 			tabIndex->tableau[i] = tabIndex->tableau[i+1] ;
 			i++ ;
@@ -330,9 +338,9 @@ int generateNumber (int inf , int sup)
 {
 	return rand() % (sup - inf + 1) + inf ;
 }
- 
 
-void generateMatricule (BUFFER *buf , INDEX *tabIndex , int numBloc , int position) 
+
+void generateMatricule (BUFFER *buf , INDEX *tabIndex , int numBloc , int position)
 {
 	bool notPossible = true ;
 	int matr,i,j,t ;
@@ -348,9 +356,9 @@ void generateMatricule (BUFFER *buf , INDEX *tabIndex , int numBloc , int positi
 
 void generateNom (BUFFER *buf , int position)
 {
-	int taille = generateNumber(4,30) ; 
+	int taille = generateNumber(4,30) ;
 	int j ;
-	int i = 0 ; 
+	int i = 0 ;
 	while (i < taille)
 	{
 		j = generateNumber(1,26) ;
@@ -363,9 +371,9 @@ void generateNom (BUFFER *buf , int position)
 
 void generatePrenom (BUFFER *buf , int position)
 {
-	int taille = generateNumber(4,30) ; 
+	int taille = generateNumber(4,30) ;
 	int j ;
-	int i = 0 ; 
+	int i = 0 ;
 	while (i < taille)
 	{
 		j = generateNumber(1,26) ;
@@ -389,12 +397,12 @@ void generateDateNaissance (BUFFER *buf , int position )
 		{
 			jour = generateNumber(1,29) ;
 		}
-		else 
+		else
 		{
 			jour = generateNumber(1,28) ;
 		}
     }
-    else 
+    else
     {
     	if (((mois <= 7) && (mois % 2 == 1)) || ((mois >= 8) && (mois % 2 == 0)))
 	    {
@@ -417,12 +425,12 @@ void generateWilayaNaissance (BUFFER *buf , int position )
 	return ;
 }
 
-void generateGroupeSanguin (BUFFER *buf,int position) 
+void generateGroupeSanguin (BUFFER *buf,int position)
 {
 	int i = generateNumber(1,8) ;
 	strcpy(buf->tab[position].groupeSanguin,groupesSanguin[i-1]) ;
 	return ;
-} 
+}
 
 void generateGrade (BUFFER *buf,int position )
 {
@@ -432,26 +440,26 @@ void generateGrade (BUFFER *buf,int position )
 
 }
 
-void generateForce (BUFFER *buf,int position) 
+void generateForce (BUFFER *buf,int position)
 {
 	int i = generateNumber(1,8) ;
 	strcpy(buf->tab[position].forceArmee,forces[i-1]) ;
 	return ;
-} 
+}
 
-void generateRegion (BUFFER *buf,int position) 
+void generateRegion (BUFFER *buf,int position)
 {
 	int i = generateNumber(1,6) ;
 	strcpy(buf->tab[position].regionMilitaire,regions[i-1]) ;
 	return ;
-} 
+}
 
 
 void chargement_init(char* nomfichier,int n)
 {
-	BUFFER *buf ; 
+	BUFFER *buf ;
 	INDEX *tabIndex ;
-	FILE *f ; 
+	FILE *f ;
 	tabIndex = (INDEX*)malloc(sizeof(INDEX)) ;
 	buf = (BUFFER*)malloc(sizeof(BUFFER)) ;
 	ouvrir(&f,nomfichier,"N");
@@ -489,13 +497,14 @@ void chargement_init(char* nomfichier,int n)
 		affentete(f,i,1);
 
 	}
+	createIndex("MATRICULE_INDEX.idx") ;
 	sauvIndex("MATRICULE_INDEX.idx",tabIndex) ;
 	fermer(f);
 }
 
 
 
-void recherche(char* nomfichier, int valeur,bool *trouve,int *i,int *j,int *t)   
+void recherche(char* nomfichier, int valeur,bool *trouve,int *i,int *j,int *t)
 {
 	INDEX *tabIndex ;
 	tabIndex = (INDEX*)malloc(sizeof(INDEX)) ;
@@ -504,62 +513,69 @@ void recherche(char* nomfichier, int valeur,bool *trouve,int *i,int *j,int *t)
 }
 
 
-void insertion(char* nomfichier,Tenreg e) 
+void insertion(char* nomfichier,Tenreg e)
 {
-    FILE *f ; 
+    FILE *f ;
 	INDEX *tabIndex ;
 	ouvrir(&f,nomfichier,"A");
-	int i ;
+	int i,j,t ;
+	bool trouve ;
 	BUFFER *buf;
 	buf = (BUFFER*)malloc(sizeof(BUFFER)) ;
 	int n=entete(f,1);
 	tabIndex = (INDEX*)malloc(sizeof(INDEX)) ;
-	chargementIndex("MATRICULE_INDEX.idx",tabIndex) ; 
-	if (n!=0)
+	chargementIndex("MATRICULE_INDEX.idx",tabIndex) ;
+	rechercheIndex(tabIndex,e.matricule,&trouve,&i,&j,&t) ;
+	if (!trouve)
 	{
-		lireDir(f,n,buf);
-	}
-	else
-	{
-		n=1;
-		affentete(f,1,1);
-		buf->nb=0;
-	}
-	if (buf->nb<MAX)
-	{
-		buf->tab[buf->nb]=e;
-		buf->nb=buf->nb+1;
-	}
-	else
-	{
-		n++  ;
-		buf->nb=1;
-		buf->tab[0]=e;
-		affentete(f,1,n);
-	}
+		if (n!=0)
+		{
+			lireDir(f,n,buf);
 
-	ecrireDir(f,n,buf) ; 
-	insertionIndex(tabIndex,e.matricule,n,buf->nb-1) ;
-	sauvIndex("MATRICULE_INDEX.idx",tabIndex) ; 
-	fermer(f);
+		}
+		else
+		{
+			n=1;
+			affentete(f,1,1);
+			buf->nb=0;
 
-} 
+		}
+		if (buf->nb<MAX)
+		{
+			buf->tab[buf->nb]=e;
+			buf->nb=buf->nb+1;
 
+		}
+		else
+		{
+			n++  ;
+			buf->nb=1;
+			buf->tab[0]=e;
+			affentete(f,1,n);
+
+		}
+		ecrireDir(f,n,buf) ;
+		insertionIndex(tabIndex,e.matricule,n,buf->nb-1) ;
+		sauvIndex("MATRICULE_INDEX.idx",tabIndex) ;
+		fermer(f);
+
+	}
+}
 
 void suppression(char* nomfichier, int mat)
 {
-	FILE *f ; 
+	FILE *f ;
 	BUFFER *buf;
 	INDEX *tabIndex ;
 	buf = (BUFFER*)malloc(sizeof(BUFFER)) ;
 	tabIndex = (INDEX*)malloc(sizeof(INDEX)) ;
-	chargementIndex("MATRICULE_INDEX.idx",tabIndex) ; 
+	chargementIndex("MATRICULE_INDEX.idx",tabIndex) ;
 	BUFFER *buf2;
 	buf2 = (BUFFER*)malloc(sizeof(BUFFER)) ;
 	int i,j,t,n ;
 	bool trouve=true;
 	ouvrir(&f,nomfichier,"A");
-	rechercheIndex(tabIndex,mat,&trouve,&i,&j,&t) ; 
+	rechercheIndex(tabIndex,mat,&trouve,&i,&j,&t) ;
 	buf2->nb=0;
 	trouve=true;
 	if (trouve)
@@ -595,19 +611,19 @@ void suppression(char* nomfichier, int mat)
 				affentete(f,n-1,1);
 			}
 		}
-    suppressionIndex(tabIndex,mat) ; 
-	sauvIndex("MATRICULE_INDEX.idx",tabIndex) ; 
+    suppressionIndex(tabIndex,mat) ;
+	sauvIndex("MATRICULE_INDEX.idx",tabIndex) ;
 	fermer(f);
 	}
 }
 
 
-void requeteIntervalle (char* nomfichier, int m1, int m2) 
+void requeteIntervalle (char* nomfichier, int m1, int m2)
 {
 	FILE *f ;
-    ouvrir(&f,nomfichier,"A") ; 
+    ouvrir(&f,nomfichier,"A") ;
     BUFFER *buf ;
-    buf = (BUFFER*)malloc(sizeof(BUFFER)) ; 	
+    buf = (BUFFER*)malloc(sizeof(BUFFER)) ;
 	int i,j,t1,t2 ;
 	bool trouve1, trouve2 ;
 	INDEX *tabIndex ;
@@ -617,13 +633,13 @@ void requeteIntervalle (char* nomfichier, int m1, int m2)
 	rechercheIndex(tabIndex,m2,&trouve2,&i,&j,&t2) ;
 	if (((t1 >= tabIndex->taille)) && (t2 >= tabIndex->taille))
 	{
-		printf("Aucun element est dans ce intervalle") ;
-		return ; 
+		printf("\033[1;31mAucun element est dans ce intervalle\033[0m") ;
+		return ;
 	}
 	if ((t1 == t2) && (t1 == 0))
 	{
-		printf("Aucun element est dans ce intervalle") ;
-		return ; 
+		printf("\033[1;31mAucun element est dans ce intervalle\033[0m") ;
+		return ;
 	}
 	while ( (t1<= t2)&&(t1<tabIndex->taille))
 	{
@@ -631,16 +647,16 @@ void requeteIntervalle (char* nomfichier, int m1, int m2)
 		{
 			if (!trouve2)
 			{
-				break ; 
+				break ;
 			}
 		}
-		rechercheIndex(tabIndex,tabIndex->tableau[t1].cle,&trouve1,&i,&j,&t1) ; 
+		rechercheIndex(tabIndex,tabIndex->tableau[t1].cle,&trouve1,&i,&j,&t1) ;
 		lireDir(f,i,buf) ;
 		printSoldier(buf->tab[j]) ;
-		t1++ ; 
+		t1++ ;
 	}
-    fermer(f); 
-	
+    fermer(f);
+
 }
 
 
@@ -655,7 +671,7 @@ void printSoldier(Tenreg e )
     printf("force : %s\t \n",e.forceArmee) ;
     printf("grade : %s\t \n",e.grade) ;
     printf("wilaya : %s\t |  ",e.wilayaNaissance) ;
-    printf("Region Militaire: %s\n",e.regionMilitaire) ; 
+    printf("Region Militaire: %s\n",e.regionMilitaire) ;
     printf("------------------------------------- \n") ;
 
 }
@@ -664,14 +680,14 @@ void printSoldier(Tenreg e )
 void printFile (char *nomfichier)
 {
     BUFFER *buf ;
-    buf = (BUFFER*)malloc(sizeof(BUFFER)) ; 
+    buf = (BUFFER*)malloc(sizeof(BUFFER)) ;
     FILE *f ;
     ouvrir(&f,nomfichier,"A") ;
     int t , j;
     for (int i=1;i<=entete(f,1);i++)
 
     {
-        lireDir(f,i,buf) ; 
+        lireDir(f,i,buf) ;
         t = buf->nb ;
         j = 0 ;
         for (j; j<t ; j++)
@@ -683,25 +699,56 @@ void printFile (char *nomfichier)
 
 void modifierRegion(char* nomfichier, int valeur)
 {
-	FILE *f ; 
+	FILE *f ;
 	BUFFER *buf ;
 	int i,j,t,n ;
 	bool trouve ;
-	buf = (BUFFER *) malloc(sizeof(BUFFER)) ; 
+	buf = (BUFFER *) malloc(sizeof(BUFFER)) ;
 	recherche(nomfichier,valeur,&trouve,&i,&j,&t) ;
 	if (trouve)
 	{
-		printf("\nEntrez le numero de la nouvelle region: ") ; 
-		scanf("%d",&n);
+		do
+		{
+			printf("\033[1mTapez la nouvelle region, le nombre doit etre entre 1 et 6:");
+			scanf(" %d", &n);
+		}while((n<1)&&(n>6));
 		ouvrir(&f,nomfichier,"A") ;
 		lireDir(f,i,buf) ;
 		strcpy(buf->tab[j].regionMilitaire,regions[n-1]) ;
 		ecrireDir(f,i,buf) ;
+		printf("\033[1;32mChangement Finie...\033[0m\n");
 		return ;
 	}
-	printf("Soldat n'existe pas dans notre base de donnes") ; 
+	printf("\033[1;31mSoldat n'existe pas dans notre base de donnes\033[0m") ;
 
 }
 
+
+bool is_valid_date(int day, int month, int year) {
+    // Function to check if a given year is a leap year
+    int is_leap_year(int year) {
+        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    }
+
+    // Array to store the number of days in each month
+    int days_in_month[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    // Check if the month is within the valid range
+    if (month < 1 || month > 12) {
+        return false; // Invalid month
+    }
+
+    // Check if the day is within the valid range for the given month
+    if (day < 1 || day > days_in_month[month]) {
+        // Special case: February in a leap year
+        if (month == 2 && day == 29 && is_leap_year(year)) {
+            return 1; // Valid leap year day
+        } else {
+            return true; // Invalid day
+        }
+    }
+
+    return 1; // Valid date
+}
 
 
