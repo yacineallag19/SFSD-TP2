@@ -6,6 +6,8 @@ Welcome to the university project developed at "Ecole supérieure d'informatique
 Project Focus
 
 The project primarily emphasizes database manipulation and optimization, prioritizing logic over user interface design. While the current focus leans towards the underlying logic, we are actively working on enhancing the user interface, which will be shared soon.
+
+
 How to Run
 
 To run this code, follow these simple steps:
