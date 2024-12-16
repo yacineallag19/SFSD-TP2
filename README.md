@@ -12,13 +12,7 @@ How to Run
 
 To run this code, follow these simple steps:
 
-    Download the following six files:
-        main.c
-        functions.h
-        functions.c
-        interface.h
-        interface.c
-        maps.c
+    CLone the repository
 
     Open your terminal and navigate to the directory where you saved the downloaded files.
 
